@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-injector
+  namespace: genos
+  labels:
+    app: user-injector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-injector
+  template:
+    metadata:
+      labels:
+        app: user-injector
+    spec:
+      containers:
+      - name: user-injector
+        image: xwcheng/user-injector:latest
+        imagePullPolicy: Always
+        args:
+        - -tlsCertFile=/etc/webhook/certs/cert.pem
+        - -tlsKeyFile=/etc/webhook/certs/key.pem
+        - -alsologtostderr
+        - -v=4
+        - 2>&1
+        volumeMounts:
+        - name: webhook-certs
+          mountPath: /etc/webhook/certs
+          readOnly: true
+        env:
+        - name: INJECTION_TYPE
+          value: "label" # 设置注入的类型: label, annotation
+        - name: INJECTION_SUFFIX
+          value: "cxwen.com"
+      volumes:
+      - name: webhook-certs
+        secret:
+          secretName: user-injector

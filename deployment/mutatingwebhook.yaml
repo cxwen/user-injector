@@ -1,0 +1,30 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: user-injector-mutate
+  labels:
+    app: user-injector
+webhooks:
+  - name: user-injector.genos.io
+    clientConfig:
+      service:
+        name: user-injector
+        namespace: genos
+        path: "/mutate"
+      caBundle: ${CA_BUNDLE}
+    rules:
+    - operations: [ "CREATE" ]
+      apiGroups: ["apps"]
+      apiVersions: ["*"]
+      resources: ["*"]
+    - operations: [ "CREATE" ]
+      apiGroups: ["image.genos.io"]
+      apiVersions: ["*"]
+      resources: ["*"]
+    - operations: [ "CREATE" ]
+      apiGroups: [""]
+      apiVersions: ["*"]
+      resources: ["namespaces","persistentvolumeclaims", "pods"]
+
+
+

@@ -1,0 +1,27 @@
+name: publish to docker hub
+
+on:
+  push:
+    branches: [ master ]
+    tags: 
+      - 'v*.*.*'
+  pull_request:
+    branches: [ master ]
+    tags: 
+      - 'v*.*.*'
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: xwcheng/user-injector
+        username: ${{ secrets.dockerhub_username }}
+        password: ${{ secrets.dockerhub_password }}
+        tag_names: true
+        cache: true
